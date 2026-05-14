@@ -1,44 +1,138 @@
-# CLAUDE.md
+# JZ pārvaldības sistēma
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## Konteksts
 
-## Running the App
+Šī ir **Argo Timber** (kokrūpniecības uzņēmums) iekšējā ražošanas pārvaldības sistēma.
+Aplikāciju izmantos 8+ cilvēku komanda gan birojā, gan uz mobilajiem (cehā/noliktavā).
+Hostings — mākonis (vēl izvēlēsimies).
 
-```bash
-streamlit run app.py
+**Lietotājs:** Kārlis Veispāls (karlis@argotimber.lv)
+**Sistēmas valoda:** Latviešu (visi UI teksti, datu lauki, eksporti)
+
+## Tehnoloģijas (MVP fāze)
+
+- **Backend/UI:** Streamlit
+- **DB:** SQLite (lokāla, vēlāk migrēsim uz PostgreSQL)
+- **Excel:** openpyxl ar formulām
+- **Autorizācija:** streamlit-authenticator vai pielāgota
+- **Hostings:** Streamlit Cloud / Railway / paša serveris
+
+**Svarīgi:** Šis ir MVP. Pēc 6-12 mēnešiem, kad būs skaidrs kas tieši vajadzīgs,
+varbūt pārmigrēsim uz FastAPI + React. Tagad — vienkāršība un ātrums.
+
+## Moduļi (prioritātes secībā)
+
+1. **Ēvelēšana DU** — darba uzdevumu ģenerācija ar pašizmaksu
+2. **Garināšana DU** — DU ar griešanas shēmām (jau ir prototips)
+3. **Fumigācijas sertifikāti** — sertifikātu aizpildīšana no klienta datiem
+4. **Klienti / piegādātāji DB** — koplietojama starp moduļiem
+5. **Pasūtījumi** — reģistrs, statusi
+6. **Pašizmaksas aprēķini** — pēc apstrādes m³ konversija
+7. **Atskaites** — mēneša/gada pārskati
+8. **DU vēsture** — meklēšana, atkārtots eksports
+9. **Algu modelis** — likmes, aprēķini, izmaksas
+10. **Darbinieku maiņas** — grafiki, stundu uzskaite
+
+## Domēna terminoloģija (LATVIEŠU)
+
+| Termins | Skaidrojums |
+|---|---|
+| garināšana | šķērsgriešana (cross-cutting) |
+| ēvelēšana | gludināšana (planing) |
+| reze / kerf | zāģa platums, **standartā 6.2 mm** |
+| starplikas | atstatuma kluči starp dēļu rindām paķā |
+| pakas | iepakojuma vienības |
+| dēļi | apstrādājamie kokmateriāli |
+| partijas numurs | piegādātāja partijas ID |
+| DU | darba uzdevums |
+| AST | antiseptikas vanna (Lignofix apstrāde) |
+
+## Standarti un konvencijas
+
+### Darba uzdevumi
+- **Numerācija:** `DDMMGG-N` (piem., `270426-1`, `270426-2`)
+- **Numuram seko sekvence katram datumam** (1, 2, 3...)
+- Faktiskais dēļa garums = nominālais + 10 mm (piem., 3000 → 3010 mm)
+
+### Iepakošana
+- **Standarta paka:** 15 platums × 60 augstums = **900 gab/paka**
+- **Īsi gabali (≤600 mm):** pakot 2 gab garumā kopā = **1800 gab/paka**
+- **Starplikas:** ik pa 10 rindām, **15 cm no katra pakas gala**
+- Kā starplikas var izmantot tos pašus dēļus
+
+### Tilpuma formula
+```
+m³ = augstums(mm) × platums(mm) × garums(mm) × gab / 1 000 000 000
 ```
 
-Requires `streamlit` installed (`pip install streamlit`).
+### Ēvelēšana — masas konservācija
+Ēvelējot, ieejas summa (€) = izejas summa (€), bet izejas €/m³ ir augstāks
+(jo m³ samazinās ēvelēšanas zudumu dēļ). Sk. `dvk-direktorija` skill.
 
-## Architecture
+## Datu standarti
 
-Single-file Streamlit app (`app.py`) for a wood treatment production management system. The UI is entirely in Latvian.
+### Klients / Piegādātājs
+- Nosaukums (piem., "Upeslīči", "Toftan")
+- E-pasts (no e-pasta domēna var noteikt klientu)
+- Reģistrācijas Nr.
+- Adrese
 
-**Structure of `app.py`:**
-- Lines 1–50: Constants — chemical prices (€/L), bath dimensions, processing cycle parameters
-- Lines 51+: Module functions, each rendering one full UI page
-- Bottom: Sidebar navigation with `if/elif` routing to the active module
+### Eksporti
+- **Vienmēr Excel (.xlsx)** ar openpyxl, formulās — nevis cietkodētas vērtības
+- Galviņa: zila (#1F4E78) ar baltu tekstu
+- Sekciju virsraksti: gaišāk zils (#2E75B6) ar baltu tekstu
+- Tabulu galviņas: gaišs zils fons (#D9E1F2)
+- Kopsumas: dzeltens fons (#FFF2CC)
 
-**Implemented modules:**
-- `lignofix_kalkulators()` — cost calculator for wood treatment cycles (Garais/Īsais); inputs: chemical consumption, pricing; outputs: cost per m³, profit/loss
-- `vannas_parrauziba()` — bath liquid monitoring; inputs: current bath level readings; outputs: consumption vs. standard rates
+## Esošie skili (Excel ģenerēšanai)
 
-**Planned modules (stubs in sidebar nav, not yet implemented):**
-- Garināšana, Ēvelēšana (work tasks), Klienti, Pasūtījumi, Piegādātāji, Atskaites, Iestatījumi
+Šie skili **jau ir** un tos var izmantot:
 
-## Key Domain Constants
+- **eveles-darba-uzdevums** — ēvelēšanas DU no klienta pieteikuma
+- **fumi2** — fumigācijas sertifikāta aizpildīšana
+- **dvk-direktorija** — pašizmaksas aprēķins pēc ēvelēšanas
 
-Defined at the top of `app.py` — modify these when prices or equipment specs change:
+Iebūvē šos skilus jaunajā Streamlit aplikācijā kā moduļus.
 
-| Constant | Value | Meaning |
-|---|---|---|
-| `LIGNOFIX_CENA` | 9.40 €/L | Chemical price |
-| `VANNA_TILPUMS` | 22,152 L | Bath volume |
-| `GARAIS_KONCENTRACIJA` | 2.3% | Long-cycle concentration |
-| `ISAIS_KONCENTRACIJA` | 1.7% | Short-cycle concentration |
+## Arhitektūras principi
 
-## Adding a New Module
+1. **Katrs modulis savā failā** zem `moduli/` mapes
+2. **DB helperi** zem `db/` mapes
+3. **Koplietošanas utilītas** zem `utils/`
+4. **Dati** (DB fails, augšupielādes) zem `data/`
+5. **Galvenais `app.py`** tikai maršrutē, nesatur biznesa loģiku
+6. **Eksporta loģika** atsevišķos failos, lai var atkārtoti izmantot
 
-1. Define a function `my_module()` in `app.py`
-2. Add a menu entry to the sidebar `st.sidebar.radio` options
-3. Add an `elif selected == "..."` branch at the bottom to call your function
+## Kā strādāt ar šo projektu
+
+1. Vienmēr lasi šo CLAUDE.md failu pirms uzdevuma
+2. Pirms lielām izmaiņām — pajautā lietotājam apstiprinājumu
+3. Pēc katra moduļa pievienošanas — pārbaudi, ka `streamlit run app.py` strādā
+4. Pievieno testus tikai biznesa loģikai (aprēķini), ne UI
+5. Komentāri un mainīgo nosaukumi — latviešu valodā
+6. Ja kaut kas ir neskaidrs domēnā — jautā, neuzminē
+
+## Ko NEDARĪT
+
+- ❌ Necietkodēt vērtības Excel — vienmēr formulās
+- ❌ Neizveidot lietotāju kontus pats — lietotāji to dara paši pēc reģistrācijas
+- ❌ Neizmantot angļu valodu UI tekstos
+- ❌ Nelikvidēt DB datus bez `CONFIRM` dialoga
+- ❌ Nepievienot atkarības bez vajadzības — Streamlit + openpyxl + sqlite3 ir 90%
+
+## Statuss
+
+- [x] Lignofix kalkulators (gatavs)
+- [x] Vannas pārraudzība (gatavs)
+- [ ] Klienti/piegādātāji DB ⬅ **NĀKAMAIS**
+- [ ] Garināšana DU
+- [ ] Ēvelēšana DU
+- [ ] Fumigācijas sertifikāti
+- [ ] Pasūtījumi
+- [ ] Pašizmaksas aprēķini
+- [ ] DU vēsture
+- [ ] Algu modelis
+- [ ] Darbinieku maiņas
+- [ ] Atskaites
+- [ ] Autorizācija
+- [ ] Mākoņa hostings

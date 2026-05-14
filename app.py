@@ -4,7 +4,6 @@ Galvenā aplikācija ar sānu izvēlni un moduļiem
 """
 
 import streamlit as st
-from moduli_drafts_garinasana import renderet_garinasanu
 
 # ============================================================
 # LAPAS IESTATĪJUMI
@@ -358,7 +357,10 @@ elif aktivais_modulis == "📊 Vannas pārraudzība":
     renderet_vannu()
 
 elif aktivais_modulis == "📝 Garināšana (DU)":
-    renderet_garinasanu()
+    renderet_drizuma(
+        "📝 Garināšana — darba uzdevumi",
+        "Garināšanas darba uzdevumu izveide, glabāšana un eksports.",
+    )
 
 elif aktivais_modulis == "🪚 Ēvelēšana (DU)":
     renderet_drizuma(
