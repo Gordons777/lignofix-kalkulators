@@ -5,6 +5,8 @@ Galvenā aplikācija ar sānu izvēlni un moduļiem
 
 import streamlit as st
 from moduli_drafts_garinasana import renderet_garinasanu
+from moduli.mainu_grafiks import renderet_grafiku
+from db.schema import init_db
 
 st.set_page_config(
     page_title="JZ pārvaldības sistēma",
@@ -12,6 +14,9 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+# DB inicializācija startā
+init_db()
 
 # ============================================================
 # FIKSĒTIE PARAMETRI
@@ -90,18 +95,18 @@ with st.sidebar:
     st.divider()
 
     st.caption("🪵 **Ēvelēšana**")
-    nav_poga("Garināšana",  "garinasana", "📝")
-    nav_poga("Ēvelēšana",   "evelesana",  "🪚")
+    nav_poga("Garināšana", "garinasana", "📝")
+    nav_poga("Ēvelēšana",  "evelesana",  "🪚")
 
     st.divider()
 
     nav_poga("Degvielas uzpilde", "degviela", "⛽", drizuma=True)
-    nav_poga("Maiņu grafiks",     "grafiks",  "📅", drizuma=True)
+    nav_poga("Maiņu grafiks",     "grafiks",  "📅")
 
     st.divider()
 
-    nav_poga("Atskaites",   "atskaites",  "📈", drizuma=True)
-    nav_poga("Iestatījumi", "iestatijumi","⚙️")
+    nav_poga("Atskaites",   "atskaites",   "📈", drizuma=True)
+    nav_poga("Iestatījumi", "iestatijumi", "⚙️")
 
     st.divider()
     st.caption("v0.2 · JZ")
@@ -122,7 +127,6 @@ def aprekinat_pasizmaksu(cikls_nosaukums, lignofix_kg_m3):
         "darba_izmaksas": darba_izmaksas,
         "pasizmaksa": pasizmaksa,
     }
-
 
 def renderet_cikla_kolonu(cikls_nosaukums, default_lig, default_cena, key_prefix):
     cikls = CIKLI[cikls_nosaukums]
@@ -166,7 +170,6 @@ def renderet_patierinu():
         renderet_cikla_kolonu("Garais", 0.65, 8.60, "lig_g")
     with col_i:
         renderet_cikla_kolonu("Īsais",  0.30, 9.00, "lig_i")
-
 
 def renderet_vannu():
     st.title("📊 Vannas pārraudzība")
@@ -214,8 +217,7 @@ def renderet_vannu():
     st.markdown("---")
     st.markdown("### Rezultāti")
     c1, c2, c3 = st.columns(3)
-    c1.metric("No vannas (līmeņa kritums)", f"{no_vannas_l:,.1f} L",
-              delta=f"{limena_kritums_cm} cm")
+    c1.metric("No vannas (līmeņa kritums)", f"{no_vannas_l:,.1f} L", delta=f"{limena_kritums_cm} cm")
     c2.metric("Pievienots ar papildinājumiem", f"{pievienots_l:,.0f} L")
     c3.metric("Kopējais šķidruma patēriņš", f"{kopejais_l:,.1f} L")
     c4, c5 = st.columns(2)
@@ -238,12 +240,10 @@ def renderet_vannu():
         else:
             st.warning(f"⚠️ Novirze {novirze_pct:+.1f}% — patēriņš par zemu")
 
-
 def renderet_drizuma(nosaukums, apraksts):
     st.title(nosaukums)
     st.info(f"🚧 **Drīzumā** — {apraksts}")
     st.caption("Pasaki, kuras funkcijas ir vissvarīgākās, lai sākt izstrādi.")
-
 
 # ============================================================
 # MARŠRUTĒŠANA
@@ -263,8 +263,7 @@ elif m == "degviela":
     renderet_drizuma("⛽ Degvielas uzpilde",
                      "Transporta degvielas uzpildes uzskaite.")
 elif m == "grafiks":
-    renderet_drizuma("📅 Maiņu grafiks",
-                     "Darbinieku maiņu plānošana un uzskaite.")
+    renderet_grafiku()
 elif m == "atskaites":
     renderet_drizuma("📈 Atskaites",
                      "Mēneša un gada atskaites, peļņas analīze.")
