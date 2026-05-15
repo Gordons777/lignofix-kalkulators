@@ -4,6 +4,7 @@ Galvenā aplikācija ar sānu izvēlni un moduļiem
 """
 
 import streamlit as st
+from moduli_drafts_garinasana import renderet_garinasanu
 
 # ============================================================
 # LAPAS IESTATĪJUMI
@@ -57,7 +58,6 @@ with st.sidebar:
     st.caption("Pārvaldības sistēma")
     st.divider()
 
-    # AST grupa
     st.markdown("**🛁 AST — Antiseptikas vanna**")
     ast_izvele = st.radio(
         "AST moduļi",
@@ -71,7 +71,6 @@ with st.sidebar:
 
     st.divider()
 
-    # Pārējie moduļi (drīzumā)
     st.markdown("**Citi moduļi**")
     cits_izvele = st.radio(
         "Citi moduļi",
@@ -146,14 +145,6 @@ def renderet_cikla_kolonu(cikls_nosaukums, default_lig, default_cena, key_prefix
         format="%.2f",
         key=f"{key_prefix}_cena",
     )
-    apjoms = st.number_input(
-        "Apstrādātā koka apjoms (m³)",
-        min_value=0.0,
-        value=100.0,
-        step=1.0,
-        format="%.0f",
-        key=f"{key_prefix}_apjoms",
-    )
 
     st.info(
         f"Bochemit standarts: **{cikls['bochemit_kg_m3']} kg/m³** "
@@ -162,7 +153,6 @@ def renderet_cikla_kolonu(cikls_nosaukums, default_lig, default_cena, key_prefix
 
     rezultati = aprekinat_pasizmaksu(cikls_nosaukums, lignofix)
     delta = cena - rezultati["pasizmaksa"]
-    pelna_kopa = delta * apjoms
 
     st.markdown("---")
     st.markdown("**Uz m³:**")
@@ -175,16 +165,6 @@ def renderet_cikla_kolonu(cikls_nosaukums, default_lig, default_cena, key_prefix
         st.success(f"**Delta: +{delta:.2f} €/m³**")
     else:
         st.error(f"**Delta: {delta:.2f} €/m³** (zaudējumi)")
-
-    st.markdown(f"**Par apjomu {apjoms:.0f} m³:**")
-    c3, c4 = st.columns(2)
-    c3.metric("Pašizmaksa", f"{rezultati['pasizmaksa'] * apjoms:,.2f} €")
-    c4.metric("Ieņēmumi", f"{cena * apjoms:,.2f} €")
-
-    if pelna_kopa >= 0:
-        st.success(f"**Peļņa: +{pelna_kopa:,.2f} €**")
-    else:
-        st.error(f"**Zaudējumi: {pelna_kopa:,.2f} €**")
 
 
 # ============================================================
@@ -357,10 +337,7 @@ elif aktivais_modulis == "📊 Vannas pārraudzība":
     renderet_vannu()
 
 elif aktivais_modulis == "📝 Garināšana (DU)":
-    renderet_drizuma(
-        "📝 Garināšana — darba uzdevumi",
-        "Garināšanas darba uzdevumu izveide, glabāšana un eksports.",
-    )
+    renderet_garinasanu()
 
 elif aktivais_modulis == "🪚 Ēvelēšana (DU)":
     renderet_drizuma(
@@ -406,18 +383,8 @@ else:
         un biznesa procesiem.
 
         **Kā lietot:**
-        Kreisajā pusē izvēlies moduli no saraksta. Šobrīd pieejami:
-
-        - **🧪 Lignofix kalkulators** — pašizmaksas aprēķins garajam un īsajam ciklam
-        - **📊 Vannas pārraudzība** — šķidruma līmeņa un patēriņa kontrole
-
-        **Drīzumā:**
-        Garināšana, ēvelēšana, klienti, pasūtījumi, piegādātāji, atskaites.
+        Kreisajā pusē izvēlies moduli no saraksta.
         """
     )
-
     st.divider()
-    st.caption(
-        "Šobrīd aplikācija ir izstrādes stadijā. "
-        "Ja kaut kas nestrādā vai vēlies kādu funkciju, raksti."
-    )
+    st.caption("Aplikācija izstrādes stadijā.")
