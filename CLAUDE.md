@@ -125,6 +125,8 @@ Iebūvē šos skilus jaunajā Streamlit aplikācijā kā moduļus.
 - [x] Lignofix kalkulators (gatavs)
 - [x] Vannas pārraudzība (gatavs)
 - [x] Jelgavas veikals — pārdošana un uzskaite (MVP, sk. `VEIKALS_PLANS.md`)
+  - Atsevišķa programma `veikals_app.py` (DVK Timber), sava DB `data/veikals.db`, parole `VEIKALS_PAROLE`,
+    hostings Railway → `veikals.dvksolutions.lv` (sk. `VEIKALS_IZVIETOSANA.md`). JZ `app.py` to neiekļauj.
 - [ ] Klienti/piegādātāji DB ⬅ **NĀKAMAIS**
 - [ ] Garināšana DU
 - [ ] Ēvelēšana DU

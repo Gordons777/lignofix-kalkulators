@@ -52,7 +52,8 @@ precīzu tilpumu, noapaļo tikai attēlošanai.
 
 ## 4. Kā sākt lietot
 
-1. `streamlit run app.py` → sānu izvēlne **🛒 Jelgavas veikals**.
+1. Veikals ir **atsevišķa programma** `veikals_app.py` ar savu paroli un datubāzi, adrese
+   `veikals.dvksolutions.lv` — izvietošana soli pa solim: `VEIKALS_IZVIETOSANA.md`.
 2. **📥 Imports** → augšupielādē `inventarizācija Augusts 2026.xlsx` → Importēt
    (ielādē ~540 pakas ar atlikumu > 0).
 3. **Iestatījumi** → ievadi DVK Timber rekvizītus (reģ. Nr., adrese, banka) rēķiniem.
@@ -61,8 +62,7 @@ precīzu tilpumu, noapaļo tikai attēlošanai.
 
 ## 5. Nākamie soļi (piedāvājums)
 
-1. **Mākoņa hostings + pieslēgšanās** — lai veikalā uz planšetes/telefona un birojā redz vienu
-   un to pašu (tagad SQLite lokāli). Pārdevējs pieslēdzas ar savu kodu → automātiski „pārdevējs”.
+1. ~~**Mākoņa hostings + pieslēgšanās**~~ — sagatavots (Railway + parole), sk. `VEIKALS_IZVIETOSANA.md`.
 2. **Rezervācijas** (tagad atsevišķa lapa Excel): rezervēt preci klientam uz N dienām — atlikumā
    rādās „rezervēts”, bet vēl nav pārdots.
 3. **Pieņemšana no Argo / DVK pavadzīmēm** — ielādēt ienākošo pavadzīmi (paku saraksts) ar vienu
