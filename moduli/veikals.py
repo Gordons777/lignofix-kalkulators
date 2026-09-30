@@ -16,7 +16,7 @@ from db.veikals_db import (
     save_iestatijumi, update_pakas_cenas,
 )
 from utils.veikals_calc import (
-    APMAKSAS_VEIDI, APMAKSATS_UZREIZ, PIRCEJA_TIPI, REVERSA_TEKSTS, VIENIBAS, atlaides_proc, m3,
+    APMAKSAS_VEIDI, APMAKSATS_UZREIZ, PIRCEJA_TIPI, REVERSA_TEKSTS, VIENIBAS, atlaides_proc, atlautas_vienibas, m3,
     noklusejuma_cena, noklusejuma_vieniba, piemerot_atlaidi, pvn_summas, rindas_aprekins, viena_gab_cena,
 )
 from utils.veikals_eksports import atlikumi_xlsx, atskaite_xlsx, pavadzime_xlsx
@@ -115,7 +115,7 @@ def _cilne_pardosana():
         paka = st.selectbox("Paka", pakas, format_func=_pakas_nosaukums, key="v_paka")
         pieejams = paka["gab_atlikums"] - groza_gab.get(paka["id"], 0)
 
-        vienibas = ["m3", "m2", "gab"] if paka["platums"] else (["m3", "gab"] if paka["biezums"] else ["gab"])
+        vienibas = atlautas_vienibas(paka)
         noklus = noklusejuma_vieniba(paka)
         pasizm_vien = "€/m³" if paka["biezums"] else "€/gab"
         info = st.columns(4)
@@ -248,7 +248,8 @@ def _groza_kolonna(kolonna, grozs):
                                         format="DD.MM.YYYY", key="v_termins")
         c1, c2 = st.columns(2)
         datums = c1.date_input("Datums", value=date.today(), format="DD.MM.YYYY", key="v_dat")
-        pardevejs = c2.text_input("Pārdevējs", key="v_pardevejs")
+        pardevejs = c2.text_input("Pārdevējs", value=get_iestatijumi().get("pardevejs_vards", ""),
+                                  key="v_pardevejs")
         piezimes = st.text_input("Piezīmes", key="v_piez")
 
         s = pvn_summas(kopa, pvn)
@@ -728,6 +729,7 @@ def _cilne_imports():
             "pardevejs_regnr": c2.text_input("Reģ. Nr.", ies["pardevejs_regnr"]),
             "pardevejs_adrese": c1.text_input("Juridiskā adrese", ies["pardevejs_adrese"]),
             "veikala_adrese": c2.text_input("Veikala (izsniegšanas) adrese", ies["veikala_adrese"]),
+            "pardevejs_vards": c1.text_input("Pārdevējs (vārds, uzvārds rēķinā)", ies["pardevejs_vards"]),
             "pardevejs_banka": c1.text_input("Banka", ies["pardevejs_banka"]),
             "pardevejs_konts": c2.text_input("Konts (IBAN)", ies["pardevejs_konts"]),
         }

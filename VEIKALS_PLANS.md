@@ -74,13 +74,11 @@ precīzu tilpumu, noapaļo tikai attēlošanai.
    atvērtajiem rēķiniem.
 7. **Mēneša atskaite grāmatvedībai** — PVN reversa darījumu saraksts (PVN deklarācijas pielikumam).
 
-## 6. Jautājumi, kas jāapstiprina
+## 6. Apstiprinātie lēmumi
 
-1. **Cenas failā — bez PVN?** Pieņēmu, ka `Pārdošanas cena m3` ir bez PVN un PVN tiek pieskaitīts.
-   Ja veikalā cenas ir ar PVN — jāpārslēdz.
-2. **Reverss kokmateriāliem** — vai jūsu grāmatvede apstiprina, ka visiem PVN maksātājiem
-   piemērojam apgriezto maksāšanu (arī nelieliem apjomiem)?
-3. **DVK Timber rekvizīti** rēķinam (reģ. Nr., juridiskā adrese, konts).
-4. **Apdare** — vai vienmēr pārdod par m², vai dažreiz par gab / m³?
-5. **Kas drīkst mainīt cenas un dot atlaides** — visi pārdevēji vai tikai vadītājs? Vai vajag
-   maksimālo atlaides %?
+1. **Cenas ir bez PVN** — PVN tiek pieskaitīts rēķinā.
+2. **Reverss** — visiem PVN maksātājiem piemēro apgriezto PVN maksāšanu (0%, obligāts PVN Nr.).
+3. **DVK Timber rekvizīti** — ievada cilnē „Imports / iestatījumi”.
+4. **Apdare vienmēr par m²** — pakām ar m² cenu m³ izvēle nav pieejama (1 dēļa cena rēķināta no m²).
+5. **Viens pārdevējs = īpašnieks** — lomas un atlaižu limiti nav vajadzīgi; pārdevēja vārds
+   tiek saglabāts iestatījumos un automātiski ielikts katrā rēķinā.

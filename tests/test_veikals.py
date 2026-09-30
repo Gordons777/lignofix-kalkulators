@@ -110,3 +110,11 @@ def test_reverss_bez_pvn(db):
                                     klienta_pvn_nr="LV40000000000", apmaksas_veids="Karte")
     p = db.get_pardosanas(date(2026, 9, 30), date(2026, 9, 30))[0]
     assert p["pvn"] == 0 and p["kopa"] == p["bez_pvn"] == 45.25 and p["apmaksats"] == 1
+
+
+def test_apdare_tikai_m2():
+    from utils.veikals_calc import atlautas_vienibas
+    assert atlautas_vienibas({"biezums": 18, "platums": 135, "garums": 4500, "cena_m2": 6, "cena_m3": 334}) == ["m2", "gab"]
+    assert atlautas_vienibas({"biezums": 45, "platums": 95, "garums": 4200, "cena_m3": 252})[0] == "m3"
+    assert atlautas_vienibas({"biezums": 33, "garums": 1500}) == ["m3", "gab"]
+    assert atlautas_vienibas({"cena_gab": 5}) == ["gab"]

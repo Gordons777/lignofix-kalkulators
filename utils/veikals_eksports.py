@@ -142,7 +142,7 @@ def pavadzime_xlsx(pardosana: dict, rindas: list[dict], iestatijumi: dict) -> by
 
     if not pvn_proc:
         ws.cell(k + 6, 2, REVERSA_TEKSTS).font = BOLD
-    ws.cell(k + 8, 2, "Izsniedza: ____________________")
+    ws.cell(k + 8, 2, f"Izsniedza: {pardosana.get('pardevejs') or '____________________'}")
     ws.cell(k + 8, 7, "Saņēma: ____________________")
     if pardosana.get("piezimes"):
         ws.cell(k + 10, 2, f"Piezīmes: {pardosana['piezimes']}")

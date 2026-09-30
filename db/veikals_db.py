@@ -21,6 +21,7 @@ IESTATIJUMI_NOKLUSEJUMS = {
     "pardevejs_banka": "",
     "pardevejs_konts": "",
     "veikala_adrese": "Jelgava",
+    "pardevejs_vards": "",
 }
 
 

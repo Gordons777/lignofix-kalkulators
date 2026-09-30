@@ -71,6 +71,20 @@ def viena_gab_cena(paka):
     return 0.0
 
 
+def atlautas_vienibas(paka):
+    """
+    Kādās vienībās drīkst pārdot paku. Apdari (ir m² cena) pārdod vienmēr par m²
+    (gab — tikai kā ērtība vienam dēlim, cena rēķināta no m² cenas).
+    """
+    if paka.get("cena_m2") and paka.get("platums"):
+        return ["m2", "gab"]
+    if paka.get("platums"):
+        return ["m3", "m2", "gab"]
+    if paka.get("biezums"):
+        return ["m3", "gab"]  # apaļie (mieti)
+    return ["gab"]
+
+
 def noklusejuma_cena(paka, vieniba):
     if vieniba == "gab":
         return viena_gab_cena(paka)
