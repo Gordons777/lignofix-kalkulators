@@ -1,0 +1,8 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "deploy": {
+    "startCommand": "streamlit run veikals_app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true --browser.gatherUsageStats false",
+    "healthcheckPath": "/_stcore/health",
+    "restartPolicyType": "ON_FAILURE"
+  }
+}

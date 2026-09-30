@@ -34,8 +34,8 @@ def test_rindas_aprekins_gab_prece():
 
 
 def test_noklusejuma_vieniba():
-    assert noklusejuma_vieniba({"cena_m2": 6, "cena_m3": 330, "biezums": 18}) == "m2"
-    assert noklusejuma_vieniba({"cena_m3": 330, "biezums": 18}) == "m3"
+    assert noklusejuma_vieniba({"cena_m2": 6, "cena_m3": 330, "biezums": 18, "platums": 135}) == "m2"
+    assert noklusejuma_vieniba({"cena_m3": 330, "biezums": 18, "platums": 135}) == "m3"
     assert noklusejuma_vieniba({"cena_gab": 5}) == "gab"
 
 
@@ -46,10 +46,8 @@ def test_pvn_un_numurs():
 
 @pytest.fixture
 def db(tmp_path, monkeypatch):
-    import db.schema as schema
-    monkeypatch.setattr(schema, "DB_PATH", tmp_path / "t.db")
-    schema.init_db()
     from db import veikals_db
+    monkeypatch.setattr(veikals_db, "DB_PATH", tmp_path / "veikals.db")
     veikals_db.init_veikals_db()
     return veikals_db
 
@@ -118,3 +116,18 @@ def test_apdare_tikai_m2():
     assert atlautas_vienibas({"biezums": 45, "platums": 95, "garums": 4200, "cena_m3": 252})[0] == "m3"
     assert atlautas_vienibas({"biezums": 33, "garums": 1500}) == ["m3", "gab"]
     assert atlautas_vienibas({"cena_gab": 5}) == ["gab"]
+
+
+def test_mietiem_ar_m2_cenu_noklusejums_m3():
+    # Failā MIETI rindām ir arī m² cena (W = V*1.1), bet platuma nav — jāpārdod par m³
+    paka = {"biezums": 60, "garums": 1000, "cena_m3": 338.8, "cena_m2": 1.118}
+    assert noklusejuma_vieniba(paka) == "m3"
+
+
+def test_klients_saglabajas_ar_rekviziitiem(db):
+    pid = db.add_paka({"produkts": "C24", "biezums": 45, "platums": 95, "garums": 4200, "gab_sakuma": 10})
+    db.izveidot_pardosanu([{"paka_id": pid, "gab": 1, "vieniba": "gab", "cena": 5}], date(2026, 9, 30),
+                          klients="X SIA", klienta_regnr="4000", klienta_pvn_nr="LV4000",
+                          pirceja_tips="PVN maksātājs (reverss)", pvn_likme=0.0)
+    assert db.get_klientu_saraksts() == ["X SIA"]
+    assert db.get_klienta_dati("X SIA")["klienta_pvn_nr"] == "LV4000"

@@ -4,8 +4,10 @@ Jelgavas veikala (DVK Timber) datubāze — pakas, pārdošanas, kustību žurn�
 Princips: `veikala_pakas.gab_atlikums` ir tekošais atlikums, bet katra izmaiņa
 tiek ierakstīta `veikala_kustibas`, lai vienmēr var redzēt, kāpēc atlikums mainījās.
 """
+import os
+import sqlite3
 from datetime import date, datetime
-from db.schema import get_conn
+from pathlib import Path
 from utils.veikals_calc import APMAKSATS_UZREIZ, rindas_aprekins, pardosanas_numurs, pvn_summas
 
 PAKAS_LAUKI = [
@@ -13,6 +15,19 @@ PAKAS_LAUKI = [
     "pasizmaksa_m3", "pasizmaksa_gab", "cena_m3", "cena_m2", "cena_gab",
     "pakas_nr", "piegadatajs", "pavadzime", "piezimes",
 ]
+
+# Veikalam ir SAVA datubāze (DVK Timber ir cits uzņēmums nekā Argo Timber / JZ).
+# Mākonī ceļu norāda ar VEIKALS_DB_PATH uz pastāvīgu disku, piem. /data/veikals.db
+DB_PATH = Path(os.environ.get("VEIKALS_DB_PATH") or Path(__file__).parent.parent / "data" / "veikals.db")
+
+
+def get_conn():
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(DB_PATH))
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
 
 IESTATIJUMI_NOKLUSEJUMS = {
     "pardevejs_nosaukums": "DVK Timber, SIA",
@@ -72,6 +87,10 @@ def init_veikals_db():
         FOREIGN KEY (paka_id) REFERENCES veikala_pakas(id))""")
     c.execute("""CREATE TABLE IF NOT EXISTS veikala_iestatijumi (
         atslega TEXT PRIMARY KEY, vertiba TEXT)""")
+    c.execute("""CREATE TABLE IF NOT EXISTS veikala_klienti (
+        nosaukums TEXT PRIMARY KEY,
+        regnr TEXT, pvn_nr TEXT, adrese TEXT, pirceja_tips TEXT,
+        atjauninats TEXT DEFAULT (datetime('now')))""")
     # Migrācija: jaunās kolonnas vecākām DB versijām
     jaunas = {
         "veikala_pardosanas_rindas": {"cena_velama": "REAL", "summa_velama": "REAL", "datums": "TEXT"},
@@ -308,6 +327,12 @@ def izveidot_pardosanu(grozs: list[dict], datums: date, klients="", klienta_regn
             pid = cur.lastrowid
         _pievienot_rindas(conn, pid, numurs, grozs, datums)
         _parrekinat_summu(conn, pid)
+        if klients:
+            conn.execute(
+                "INSERT INTO veikala_klienti (nosaukums, regnr, pvn_nr, adrese, pirceja_tips) VALUES (?,?,?,?,?) "
+                "ON CONFLICT(nosaukums) DO UPDATE SET regnr=excluded.regnr, pvn_nr=excluded.pvn_nr, "
+                "adrese=excluded.adrese, pirceja_tips=excluded.pirceja_tips, atjauninats=datetime('now')",
+                (klients, klienta_regnr, klienta_pvn_nr, klienta_adrese, pirceja_tips))
         conn.commit()
         return pid, numurs
     except Exception:
@@ -441,21 +466,17 @@ def get_pardotas_rindas(no: date, lidz: date):
 
 
 def get_klientu_saraksts():
-    """Klientu nosaukumi no kopējās `klienti` tabulas + iepriekšējām veikala pārdošanām."""
+    """Veikala klientu nosaukumi (saglabājas automātiski pēc katras pārdošanas)."""
     conn = get_conn()
-    a = [r[0] for r in conn.execute("SELECT nosaukums FROM klienti WHERE aktivs=1")]
-    b = [r[0] for r in conn.execute("SELECT DISTINCT klients FROM veikala_pardosanas WHERE klients <> ''")]
+    res = [r[0] for r in conn.execute("SELECT nosaukums FROM veikala_klienti ORDER BY nosaukums")]
     conn.close()
-    return sorted(set(a) | set(b))
+    return res
 
 
 def get_klienta_dati(klients):
-    """Pēdējās pārdošanas rekvizīti šim klientam — lai nav katru reizi jāievada no jauna."""
+    """Klienta pēdējie rekvizīti — lai nav katru reizi jāievada no jauna."""
     conn = get_conn()
-    r = conn.execute("SELECT klienta_regnr, klienta_adrese, klienta_pvn_nr, pirceja_tips FROM veikala_pardosanas "
-                     "WHERE klients=? ORDER BY id DESC LIMIT 1", (klients,)).fetchone()
-    if r is None:
-        r = conn.execute("SELECT regnr AS klienta_regnr, adrese AS klienta_adrese, NULL AS klienta_pvn_nr, "
-                         "NULL AS pirceja_tips FROM klienti WHERE nosaukums=?", (klients,)).fetchone()
+    r = conn.execute("SELECT regnr AS klienta_regnr, adrese AS klienta_adrese, pvn_nr AS klienta_pvn_nr, "
+                     "pirceja_tips FROM veikala_klienti WHERE nosaukums=?", (klients,)).fetchone()
     conn.close()
     return dict(r) if r else {}
