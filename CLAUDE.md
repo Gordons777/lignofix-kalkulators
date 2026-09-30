@@ -124,6 +124,7 @@ Iebūvē šos skilus jaunajā Streamlit aplikācijā kā moduļus.
 
 - [x] Lignofix kalkulators (gatavs)
 - [x] Vannas pārraudzība (gatavs)
+- [x] Jelgavas veikals — pārdošana un uzskaite (MVP, sk. `VEIKALS_PLANS.md`)
 - [ ] Klienti/piegādātāji DB ⬅ **NĀKAMAIS**
 - [ ] Garināšana DU
 - [ ] Ēvelēšana DU

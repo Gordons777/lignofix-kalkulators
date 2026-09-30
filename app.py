@@ -6,6 +6,7 @@ Galvenā aplikācija ar sānu izvēlni un moduļiem
 import streamlit as st
 from moduli_drafts_garinasana import renderet_garinasanu
 from moduli.mainu_grafiks import renderet_grafiku
+from moduli.veikals import renderet_veikalu
 from db.schema import init_db
 
 st.set_page_config(
@@ -89,6 +90,11 @@ with st.sidebar:
     st.caption("🪵 **Ēvelēšana**")
     nav_poga("Garināšana", "garinasana", "📝")
     nav_poga("Ēvelēšana",  "evelesana",  "🪚")
+
+    st.divider()
+
+    st.caption("🏪 **Veikals**")
+    nav_poga("Jelgavas veikals", "veikals", "🛒")
 
     st.divider()
 
@@ -226,6 +232,7 @@ elif m == "evelesana":       renderet_drizuma("🪚 Ēvelēšana — darba uzdev
 elif m == "degviela":        renderet_drizuma("⛽ Degvielas uzpilde",
                                               "Transporta degvielas uzpildes uzskaite.")
 elif m == "grafiks":         renderet_grafiku()
+elif m == "veikals":         renderet_veikalu()
 elif m == "atskaites":       renderet_drizuma("📈 Atskaites",
                                               "Mēneša un gada atskaites, peļņas analīze.")
 elif m == "iestatijumi":     renderet_drizuma("⚙️ Iestatījumi",
