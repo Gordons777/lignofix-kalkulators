@@ -49,12 +49,8 @@ def m2(platums, garums, gab):
 
 
 def noklusejuma_vieniba(paka):
-    """Kādā vienībā pēc noklusējuma pārdod paku: m² ja ir m² cena, citādi m³, citādi gab."""
-    if paka.get("cena_m2"):
-        return "m2"
-    if paka.get("cena_m3") and paka.get("biezums"):
-        return "m3"
-    return "gab"
+    """Kādā vienībā pēc noklusējuma pārdod paku — pirmā no atļautajām (apdare m², citi m³, gabalpreces gab)."""
+    return atlautas_vienibas(paka)[0]
 
 
 def viena_gab_cena(paka):

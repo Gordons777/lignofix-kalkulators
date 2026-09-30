@@ -34,8 +34,8 @@ def test_rindas_aprekins_gab_prece():
 
 
 def test_noklusejuma_vieniba():
-    assert noklusejuma_vieniba({"cena_m2": 6, "cena_m3": 330, "biezums": 18}) == "m2"
-    assert noklusejuma_vieniba({"cena_m3": 330, "biezums": 18}) == "m3"
+    assert noklusejuma_vieniba({"cena_m2": 6, "cena_m3": 330, "biezums": 18, "platums": 135}) == "m2"
+    assert noklusejuma_vieniba({"cena_m3": 330, "biezums": 18, "platums": 135}) == "m3"
     assert noklusejuma_vieniba({"cena_gab": 5}) == "gab"
 
 
@@ -118,3 +118,9 @@ def test_apdare_tikai_m2():
     assert atlautas_vienibas({"biezums": 45, "platums": 95, "garums": 4200, "cena_m3": 252})[0] == "m3"
     assert atlautas_vienibas({"biezums": 33, "garums": 1500}) == ["m3", "gab"]
     assert atlautas_vienibas({"cena_gab": 5}) == ["gab"]
+
+
+def test_mietiem_ar_m2_cenu_noklusejums_m3():
+    # Failā MIETI rindām ir arī m² cena (W = V*1.1), bet platuma nav — jāpārdod par m³
+    paka = {"biezums": 60, "garums": 1000, "cena_m3": 338.8, "cena_m2": 1.118}
+    assert noklusejuma_vieniba(paka) == "m3"
